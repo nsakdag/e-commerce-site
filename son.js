@@ -221,9 +221,7 @@ document.addEventListener("DOMContentLoaded", function () {
   
       modalBody.innerHTML = productDetailsHTML;
   
-      // Show the modal
-      const modal = new bootstrap.Modal(document.getElementById("exampleModal"));
-      modal.show();
+   
     }
   
 
