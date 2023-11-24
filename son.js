@@ -1,10 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
-
-// 1. Dom dan elementlerı cagır
-// filterProducts();
+  // 1. Dom dan elementlerı cagır
+  // filterProducts();
 
   const sepetButton = document.querySelector(".btn-secondary"); // sepet butonu
-
+ 
+ 
   let products = [];
   let cartItems = [];
 
@@ -13,32 +13,32 @@ document.addEventListener("DOMContentLoaded", function () {
   const searchInput = document.getElementById("searchInput"); // searchInput
   const sepetCount = document.getElementById("sepet"); // sepetteki sayı
   const totalAmount = document.querySelector(".offcanvas-footer h5:last-child"); // toplam tutarın miktarı
-  const modalBody = document.querySelector('.modal-body')
-  categoryElement.textContent ='All'
+  const modalBody = document.querySelector(".modal-body");
+  categoryElement.textContent = "All";
   // 2.API yi çek
   async function getAllProducts() {
     try {
       const response = await fetch(
         "https://anthonyfs.pythonanywhere.com/api/products/"
       );
-// 2.1 responstakı kategorilere göre butonları olusturmak için kategorileri uniqueCategories arrayine atıyoruz
+      // 2.1 responstakı kategorilere göre butonları olusturmak için kategorileri uniqueCategories arrayine atıyoruz
       if (response.ok) {
         products = await response.json();
-      
+
         const uniqueCategories = products.reduce((categories, product) => {
           if (!categories.includes(product.category)) {
             categories.push(product.category);
           }
           return categories;
         }, []);
-// Kategorilerin arrayine All diye bir sınıf ekliyoruz
+        // Kategorilerin arrayine All diye bir sınıf ekliyoruz
 
         uniqueCategories.push("All");
 
-// bu kategorilere göre butonları oluşturacak fonksiyonu çağırıyoruz       
+        // bu kategorilere göre butonları oluşturacak fonksiyonu çağırıyoruz
         displayCategoryButtons(uniqueCategories);
 
-// kategoriye göre ürünleri html e basan fonksiyonu çağırıyoruz        
+        // kategoriye göre ürünleri html e basan fonksiyonu çağırıyoruz
         displayProducts(products);
       } else {
         console.error("Failed to fetch products:", response.statusText);
@@ -48,17 +48,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-// kategoriye göre ürünleri html e basan fonksiyonu tarif ediyoruz
-// products respons un json lasmıs hali bir array içinde 22 object var
+  // kategoriye göre ürünleri html e basan fonksiyonu tarif ediyoruz
+  // products respons un json lasmıs hali bir array içinde 22 object var
   function displayProducts(products) {
-
-// fonksiyon her çağırıldığında html i temizle ki yığılma olmasın    
+    // fonksiyon her çağırıldığında html i temizle ki yığılma olmasın
     productListContainer.innerHTML = "";
-// şimdi bu array i dolaşıp destuctring yapıcaz ve istediğimiz özellikleri seçicez ki onları html e basabilelim    
+    // şimdi bu array i dolaşıp destuctring yapıcaz ve istediğimiz özellikleri seçicez ki onları html e basabilelim
     products.forEach((product) => {
       const { id, image, title, description, price } = product;
-     
-// productCard ı ilk defa burada oluşturarak html e ürünleri ne şekilde basacağımızı ayarlıyoruz.Basacağımız yer olan productlistmain bir row section olduğu için col sınıfında bir div  
+
+      // productCard ı ilk defa burada oluşturarak html e ürünleri ne şekilde basacağımızı ayarlıyoruz.Basacağımız yer olan productlistmain bir row section olduğu için col sınıfında bir div
       const productCard = document.createElement("div");
       productCard.className = "col mb-4";
       productCard.innerHTML = `
@@ -99,14 +98,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Ekrana kategori butonlarını basan fonksiyonu tarif edelim
   function displayCategoryButtons(uniqueCategories) {
-   // html deki btns section una buttonları olusturup basacagız
+    // html deki btns section una buttonları olusturup basacagız
     const btnsElement = document.getElementById("btns");
     btnsElement.innerHTML = "";
-// yukarıda oluşturduğumz kategori arrayini tek tek geziyoruz boylece her butona ısmını verıcez ve rengini ayarlıyacagız
+    // yukarıda oluşturduğumz kategori arrayini tek tek geziyoruz boylece her butona ısmını verıcez ve rengini ayarlıyacagız
     uniqueCategories.forEach((category) => {
       const btn = document.createElement("button");
       btn.textContent = category;
-// switch case ile renkleri ayarlıyoruz
+      // switch case ile renkleri ayarlıyoruz
       switch (category.toLowerCase()) {
         case "all":
           btn.className = "btn btn-primary";
@@ -132,6 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       btn.addEventListener("click", function () {
         //butona her basışta category yazsının yanında ilgili kategori yazması için
+        searchInput.value =''
         categoryElement.textContent = category;
         filterProducts();
       });
@@ -142,10 +142,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // sımdı kategorıye gore ve inputa göre suzme fonksıyonunu tarıf edıyoruz
   function filterProducts() {
-
     const selectedCategory = categoryElement.textContent.toLowerCase();
     console.log(selectedCategory);
-   
+
     const searchTerm = searchInput.value.toLowerCase();
     console.log(searchTerm);
 
@@ -162,18 +161,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     displayProducts(filteredProducts);
   }
- 
+
   // Modal fonksiyonunu yaziyoruz
 
-    function displayProductDetailsModal(product) {
-      const modalTitle = document.getElementById("exampleModalLabel");
-      const modalBody = document.querySelector(".modalbody");
-     
-  
-      modalTitle.textContent = product.title;
-      
-  
-      const productDetailsHTML = `
+  function displayProductDetailsModal(product) {
+    const modalTitle = document.getElementById("exampleModalLabel");
+    const modalBody = document.querySelector(".modalbody");
+
+    modalTitle.textContent = product.title;
+
+    const productDetailsHTML = `
       <div class='text-center'>
       <img src="${product.image}" class='p-2' height='250px' alt="..." >
       <p><strong>Description:</strong> ${product.description}</p>
@@ -181,16 +178,12 @@ document.addEventListener("DOMContentLoaded", function () {
        
       </div>
       `;
-  
-      modalBody.innerHTML = productDetailsHTML;
-  
-   
-    }
-  
+
+    modalBody.innerHTML = productDetailsHTML;
+  }
 
   // Event listener for sepeteEkle buttons and cart buttons
   document.addEventListener("click", function (event) {
-
     // sepete ekle butonunu yakala
 
     if (event.target.classList.contains("sepeteEkleBtn")) {
@@ -199,10 +192,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // see details butonunu yakala
- 
+
     if (event.target.classList.contains("seeDetailsBtn")) {
       const productId = parseInt(event.target.id);
-      const productDetails = products.find((product) => product.id === productId);
+      const productDetails = products.find(
+        (product) => product.id === productId
+      );
       displayProductDetailsModal(productDetails);
     }
 
@@ -232,16 +227,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-
   // sepete urun ekleme icin
   function addToCart(productId) {
     const productToAdd = products.find((product) => product.id === productId);
     const existingItem = cartItems.find((item) => item.id === productId);
-  
+
     if (existingItem) {
       existingItem.quantity++;
     } else {
-      cartItems.push({ ...productToAdd});
+      cartItems.push({ ...productToAdd });
     }
 
     updateCartUI();
@@ -249,7 +243,7 @@ document.addEventListener("DOMContentLoaded", function () {
     updateCartCountUI();
   }
 
-  // 
+  //
   function increaseCartItem(productId) {
     const cartItem = cartItems.find((item) => item.id === productId);
     cartItem.quantity++;
@@ -286,11 +280,9 @@ document.addEventListener("DOMContentLoaded", function () {
     cartCount.textContent = totalQuantity;
   }
 
-  // sepete urun yollaninca sepete basmak 
+  // sepete urun yollaninca sepete basmak
   function updateCartUI() {
     const cartBody = document.querySelector(".offcanvas-body");
-    
-
 
     cartBody.innerHTML = "";
 
@@ -334,10 +326,10 @@ document.addEventListener("DOMContentLoaded", function () {
     cartItems.forEach((item) => {
       total += item.price * item.quantity;
     });
+    
     return total.toFixed(2);
   }
 
   // Call the function to fetch all products when the DOM is loaded
   getAllProducts();
- 
 });
