@@ -75,8 +75,8 @@ document.addEventListener("DOMContentLoaded", function () {
             <span>Price:</span><span>Fiyat ${price}</span>
           </div>
           <div class="card-footer w-100 d-flex justify-content-center gap-3">
-            <button class="btn btn-danger sepeteEkleBtn" data-product-id="${id}">Sepete Ekle</button>
-            <button class="btn btn-primary seeDetailsBtn" data-bs-toggle="modal" data-bs-target="#exampleModal" data-product-id="${id}">
+            <button class="btn btn-danger sepeteEkleBtn" id="${id}">Sepete Ekle</button>
+            <button class="btn btn-primary seeDetailsBtn" data-bs-toggle="modal" data-bs-target="#exampleModal" id="${id}">
     See Details
  </button>
           </div>
@@ -163,44 +163,7 @@ document.addEventListener("DOMContentLoaded", function () {
     displayProducts(filteredProducts);
   }
  
-
-  // Event listener for sepeteEkle buttons and cart buttons
-  document.addEventListener("click", function (event) {
-    if (event.target.classList.contains("sepeteEkleBtn")) {
-      const productId = parseInt(event.target.dataset.productId);
-      addToCart(productId);
-    }
-
-    if (event.target.classList.contains("seeDetailsBtn")) {
-      const productId = parseInt(event.target.getAttribute("data-product-id"));
-      const productDetails = products.find((product) => product.id === productId);
-
-      displayProductDetailsModal(productDetails);
-    }
-
-    if (
-      event.target.classList.contains("btn-success") ||
-      event.target.classList.contains("btn-warning") ||
-      event.target.classList.contains("btn-danger")
-    ) {
-      const action = event.target.dataset.action;
-      const productId = parseInt(event.target.dataset.productId);
-
-      switch (action) {
-        case "increase":
-          increaseCartItem(productId);
-          break;
-        case "decrease":
-          decreaseCartItem(productId);
-          break;
-        case "remove":
-          removeCartItem(productId);
-          break;
-        default:
-          break;
-      }
-    }
-  });
+  // Modal fonksiyonunu yaziyoruz
 
     function displayProductDetailsModal(product) {
       const modalTitle = document.getElementById("exampleModalLabel");
@@ -225,15 +188,60 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   
 
-  // Function to add a product to the cart
+  // Event listener for sepeteEkle buttons and cart buttons
+  document.addEventListener("click", function (event) {
+
+    // sepete ekle butonunu yakala
+
+    if (event.target.classList.contains("sepeteEkleBtn")) {
+      const productId = parseInt(event.target.id);
+      addToCart(productId);
+    }
+
+    // see details butonunu yakala
+ 
+    if (event.target.classList.contains("seeDetailsBtn")) {
+      const productId = parseInt(event.target.id);
+      const productDetails = products.find((product) => product.id === productId);
+      displayProductDetailsModal(productDetails);
+    }
+
+    // arttirma eksiltme silme butonlarini yakala
+
+    if (
+      event.target.classList.contains("btn-success") ||
+      event.target.classList.contains("btn-warning") ||
+      event.target.classList.contains("btn-danger")
+    ) {
+      const action = event.target.dataset.action;
+      const productId = parseInt(event.target.id);
+
+      switch (action) {
+        case "increase":
+          increaseCartItem(productId);
+          break;
+        case "decrease":
+          decreaseCartItem(productId);
+          break;
+        case "remove":
+          removeCartItem(productId);
+          break;
+        default:
+          break;
+      }
+    }
+  });
+
+
+  // sepete urun ekleme icin
   function addToCart(productId) {
     const productToAdd = products.find((product) => product.id === productId);
     const existingItem = cartItems.find((item) => item.id === productId);
-
+  
     if (existingItem) {
       existingItem.quantity++;
     } else {
-      cartItems.push({ ...productToAdd, quantity: 1 });
+      cartItems.push({ ...productToAdd});
     }
 
     updateCartUI();
@@ -241,7 +249,7 @@ document.addEventListener("DOMContentLoaded", function () {
     updateCartCountUI();
   }
 
-  // Function to increase the quantity of a cart item
+  // 
   function increaseCartItem(productId) {
     const cartItem = cartItems.find((item) => item.id === productId);
     cartItem.quantity++;
@@ -250,7 +258,7 @@ document.addEventListener("DOMContentLoaded", function () {
     updateCartCountUI();
   }
 
-  // Function to decrease the quantity of a cart item
+  // sepetteki urunun sayisini azalt
   function decreaseCartItem(productId) {
     const cartItem = cartItems.find((item) => item.id === productId);
     if (cartItem.quantity > 1) {
@@ -263,7 +271,7 @@ document.addEventListener("DOMContentLoaded", function () {
     updateCartCountUI();
   }
 
-  // Function to remove a cart item
+  // sepetten urun kaldirma
   function removeCartItem(productId) {
     cartItems = cartItems.filter((item) => item.id !== productId);
     updateCartUI();
@@ -271,16 +279,18 @@ document.addEventListener("DOMContentLoaded", function () {
     updateCartCountUI();
   }
 
-  // Function to update the cart count in the UI
+  // sepetteki item sayisini gosteren rakami guncelle
   function updateCartCountUI() {
     const cartCount = document.getElementById("sepet");
     let totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
     cartCount.textContent = totalQuantity;
   }
 
-  // Function to update the cart UI
+  // sepete urun yollaninca sepete basmak 
   function updateCartUI() {
     const cartBody = document.querySelector(".offcanvas-body");
+    
+
 
     cartBody.innerHTML = "";
 
@@ -297,9 +307,9 @@ document.addEventListener("DOMContentLoaded", function () {
               <h5 class="card-title">${product.title}</h5>
               <p class="card-text" id='miktar'>Miktar: ${product.quantity}</p>
               <p class="card-text">Fiyat: ${product.price} $</p>
-              <button class="btn btn-success" data-action="increase" data-product-id="${product.id}">Artır</button>
-              <button class="btn btn-warning" data-action="decrease" data-product-id="${product.id}">Eksilt</button>
-              <button class="btn btn-danger" data-action="remove" data-product-id="${product.id}">Kaldır</button>
+              <button class="btn btn-success" data-action="increase" id="${product.id}">Artır</button>
+              <button class="btn btn-warning" data-action="decrease" id="${product.id}">Eksilt</button>
+              <button class="btn btn-danger" data-action="remove" id="${product.id}">Kaldır</button>
             </div>
           </div>
         </div>
@@ -309,7 +319,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Function to update the total amount in the cart UI
+  // sepetteki toplam miktari ayarlama
   function updateTotalAmountUI() {
     const totalAmountElement = document.querySelector(
       ".offcanvas-footer h5:last-child"
