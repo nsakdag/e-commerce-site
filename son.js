@@ -1,32 +1,44 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const sepetButton = document.querySelector(".btn-secondary");
+
+// 1. Dom dan elementlerı cagır
+// filterProducts();
+
+  const sepetButton = document.querySelector(".btn-secondary"); // sepet butonu
+
   let products = [];
   let cartItems = [];
 
-  // DOM element selections related to product display
   const productListContainer = document.getElementById("productListmain");
-  const categoryElement = document.getElementById("category");
-  const searchInput = document.getElementById("searchInput");
-  const sepetCount = document.getElementById("sepet");
-  const totalAmount = document.querySelector(".offcanvas-footer h5:last-child");
-
-  // Function to fetch all products from the API
+  const categoryElement = document.getElementById("category"); // Category yazısındakı span
+  const searchInput = document.getElementById("searchInput"); // searchInput
+  const sepetCount = document.getElementById("sepet"); // sepetteki sayı
+  const totalAmount = document.querySelector(".offcanvas-footer h5:last-child"); // toplam tutarın miktarı
+  const modalBody = document.querySelector('.modal-body')
+  categoryElement.textContent ='All'
+  // 2.API yi çek
   async function getAllProducts() {
     try {
       const response = await fetch(
         "https://anthonyfs.pythonanywhere.com/api/products/"
       );
-
+// 2.1 responstakı kategorilere göre butonları olusturmak için kategorileri uniqueCategories arrayine atıyoruz
       if (response.ok) {
         products = await response.json();
+      
         const uniqueCategories = products.reduce((categories, product) => {
           if (!categories.includes(product.category)) {
             categories.push(product.category);
           }
           return categories;
         }, []);
+// Kategorilerin arrayine All diye bir sınıf ekliyoruz
+
         uniqueCategories.push("All");
+
+// bu kategorilere göre butonları oluşturacak fonksiyonu çağırıyoruz       
         displayCategoryButtons(uniqueCategories);
+
+// kategoriye göre ürünleri html e basan fonksiyonu çağırıyoruz        
         displayProducts(products);
       } else {
         console.error("Failed to fetch products:", response.statusText);
@@ -36,12 +48,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Function to display products in the UI
+// kategoriye göre ürünleri html e basan fonksiyonu tarif ediyoruz
+// products respons un json lasmıs hali bir array içinde 22 object var
   function displayProducts(products) {
-    productListContainer.innerHTML = "";
 
+// fonksiyon her çağırıldığında html i temizle ki yığılma olmasın    
+    productListContainer.innerHTML = "";
+// şimdi bu array i dolaşıp destuctring yapıcaz ve istediğimiz özellikleri seçicez ki onları html e basabilelim    
     products.forEach((product) => {
       const { id, image, title, description, price } = product;
+     
+// productCard ı ilk defa burada oluşturarak html e ürünleri ne şekilde basacağımızı ayarlıyoruz.Basacağımız yer olan productlistmain bir row section olduğu için col sınıfında bir div  
       const productCard = document.createElement("div");
       productCard.className = "col mb-4";
       productCard.innerHTML = `
@@ -70,25 +87,26 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Event listener for search input
+  // Event listener for search input bununla ekrandaki ürünleri süzeceğiz filter fonk ile
   searchInput.addEventListener("input", function () {
     filterProducts();
   });
 
-  // Function to truncate text to a specified length
+  // Truncate fonksiyonunu yazıyoruz
   function truncateText(text, maxLength) {
     return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
   }
 
-  // Function to display category buttons
+  // Ekrana kategori butonlarını basan fonksiyonu tarif edelim
   function displayCategoryButtons(uniqueCategories) {
+   // html deki btns section una buttonları olusturup basacagız
     const btnsElement = document.getElementById("btns");
     btnsElement.innerHTML = "";
-
+// yukarıda oluşturduğumz kategori arrayini tek tek geziyoruz boylece her butona ısmını verıcez ve rengini ayarlıyacagız
     uniqueCategories.forEach((category) => {
       const btn = document.createElement("button");
       btn.textContent = category;
-
+// switch case ile renkleri ayarlıyoruz
       switch (category.toLowerCase()) {
         case "all":
           btn.className = "btn btn-primary";
@@ -113,6 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       btn.addEventListener("click", function () {
+        //butona her basışta category yazsının yanında ilgili kategori yazması için
         categoryElement.textContent = category;
         filterProducts();
       });
@@ -121,10 +140,14 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Function to filter and display products based on category and search input
+  // sımdı kategorıye gore ve inputa göre suzme fonksıyonunu tarıf edıyoruz
   function filterProducts() {
+
     const selectedCategory = categoryElement.textContent.toLowerCase();
+    console.log(selectedCategory);
+   
     const searchTerm = searchInput.value.toLowerCase();
+    console.log(searchTerm);
 
     const filteredProducts = products.filter((product) => {
       const isInSelectedCategory =
@@ -139,12 +162,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
     displayProducts(filteredProducts);
   }
+ 
 
   // Event listener for sepeteEkle buttons and cart buttons
   document.addEventListener("click", function (event) {
     if (event.target.classList.contains("sepeteEkleBtn")) {
       const productId = parseInt(event.target.dataset.productId);
       addToCart(productId);
+    }
+
+    if (event.target.classList.contains("seeDetailsBtn")) {
+      const productId = parseInt(event.target.getAttribute("data-product-id"));
+      const productDetails = products.find((product) => product.id === productId);
+
+      displayProductDetailsModal(productDetails);
     }
 
     if (
@@ -170,6 +201,31 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   });
+
+    function displayProductDetailsModal(product) {
+      const modalTitle = document.getElementById("exampleModalLabel");
+      const modalBody = document.querySelector(".modalbody");
+     
+  
+      modalTitle.textContent = product.title;
+      
+  
+      const productDetailsHTML = `
+      <div class='text-center'>
+      <img src="${product.image}" class='p-2' height='250px' alt="..." >
+      <p><strong>Description:</strong> ${product.description}</p>
+        <p ><strong>Price:</strong> ${product.price} $</p>
+       
+      </div>
+      `;
+  
+      modalBody.innerHTML = productDetailsHTML;
+  
+      // Show the modal
+      const modal = new bootstrap.Modal(document.getElementById("exampleModal"));
+      modal.show();
+    }
+  
 
   // Function to add a product to the cart
   function addToCart(productId) {
@@ -275,4 +331,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Call the function to fetch all products when the DOM is loaded
   getAllProducts();
+ 
 });
