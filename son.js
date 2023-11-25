@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       btn.addEventListener("click", function () {
         //butona her basışta category yazsının yanında ilgili kategori yazması için
-        searchInput.value =''
+        
         categoryElement.textContent = category;
         filterProducts();
       });
@@ -154,7 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
         product.category.toLowerCase() === selectedCategory;
       const matchesSearchTerm = product.title
         .toLowerCase()
-        .includes(searchTerm);
+        .includes(searchTerm);  
 
       return isInSelectedCategory && matchesSearchTerm;
     });
