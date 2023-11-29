@@ -143,11 +143,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // sımdı kategorıye gore ve inputa göre suzme fonksıyonunu tarıf edıyoruz
   function filterProducts() {
     const selectedCategory = categoryElement.textContent.toLowerCase();
-    console.log(selectedCategory);
-
     const searchTerm = searchInput.value.toLowerCase();
-    console.log(searchTerm);
-
     const filteredProducts = products.filter((product) => {
       const isInSelectedCategory =
         selectedCategory === "all" ||
