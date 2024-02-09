@@ -1,5 +1,7 @@
 # E-COOMERCE SITE WITH JAVASCRIPT
 
+https://ns-ecommerce-site.netlify.app/
+
 -In this project, an e-commerce site was built using only javascript css and html. Bootstrap was preferred as css library.
 
 -The following JavaScript methods were used to do these: addEventListener , forEach , createElement , appendChild , filter , find , reduce , map ...
